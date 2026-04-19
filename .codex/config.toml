@@ -1,0 +1,60 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+# =========================
+# Codex 全局基础设置
+# =========================
+
+# 默认模型
+model = "gpt-5.4"
+
+# 推理强度
+model_reasoning_effort = "high"
+
+# 不弹审批
+# 可选值常见有：
+# - "untrusted"   : 只对不受信命令询问
+# - "on-request"  : 需要越界时询问
+# - "never"       : 不询问
+approval_policy = "on-request"
+
+# 沙箱模式：
+# - "read-only"
+# - "workspace-write"
+# - "danger-full-access"
+#
+sandbox_mode = "danger-full-access"
+
+# 网页搜索模式：
+# - "disabled"
+# - "cached"
+# - "live"
+web_search = "live"
+
+# =========================
+# workspace-write 的附加设置
+# =========================
+[sandbox_workspace_write]
+
+# 允许沙箱内命令访问网络
+# 例如 curl / git fetch / pip / npm 等
+network_access = true
+
+# 如有需要，也可以额外放开别的可写目录
+# writable_roots = ["/home/plain/some-other-dir"]
+
+# =========================
+# 项目信任设置
+# =========================
+[projects."/home/plain/personal-project"]
+
+# trusted 只是表示信任这个项目，允许读取项目内 .codex/config.toml
+# 不是“自动批准所有修改”
+trust_level = "trusted"
+
+[projects."/home/plain/personal-project/website"]
+trust_level = "trusted"
+
+[features]
+multi_agent = true
+
+[plugins."github@openai-curated"]
+enabled = true
