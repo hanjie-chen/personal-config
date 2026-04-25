@@ -1,17 +1,15 @@
 # personal-config
 
-这是我个人使用的一些软件与机器配置仓库，目前主要同步 Codex 相关配置。
+这是我个人使用的一些软件与机器配置仓库，用于保存适合长期维护和跨机器同步的稳定配置。
 
-## 当前跟踪的文件
+## 当前配置模块
 
-- `codex/AGENTS.md`
-- `codex/config.toml`
+- `codex/`: Codex 配置，通过软链接到 `~/.codex` 使用。
+- `git/`: Git 全局配置，包括 ignore 和 attributes。详见 `git/README.md`。
 
 ## 这个仓库的作用
 
-这个仓库保存适合长期维护和跨机器同步的稳定配置。
-
-目前 `~/.codex/AGENTS.md` 和 `~/.codex/config.toml` 通过软链接指向本仓库中的对应文件，因此可以一边正常让 Codex 读取，一边用 Git 管理版本。
+这个仓库不直接替代整个 home 目录，而是按工具拆分配置目录，例如 `codex/`、`git/`。实际使用时，再把需要的文件软链接到对应工具期望的位置。
 
 ## 使用方式
 
@@ -21,12 +19,19 @@
 ~/personal-config
 ```
 
-然后把仓库中的文件链接到 `~/.codex`：
+### Codex
+
+把仓库中的 Codex 配置链接到 `~/.codex`：
 
 ```bash
+mkdir -p ~/.codex
 ln -sf ~/personal-config/codex/AGENTS.md ~/.codex/AGENTS.md
 ln -sf ~/personal-config/codex/config.toml ~/.codex/config.toml
 ```
+
+### Git
+
+Git 全局 ignore 和 attributes 需要额外设置 Git 配置项，见 `git/README.md`。
 
 ## 说明
 
