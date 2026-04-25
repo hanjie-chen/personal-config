@@ -4,8 +4,8 @@
 
 ## 当前跟踪的文件
 
-- `.codex/AGENTS.md`
-- `.codex/config.toml`
+- `codex/AGENTS.md`
+- `codex/config.toml`
 
 ## 这个仓库的作用
 
@@ -24,8 +24,8 @@
 然后把仓库中的文件链接到 `~/.codex`：
 
 ```bash
-ln -sf ~/personal-config/.codex/AGENTS.md ~/.codex/AGENTS.md
-ln -sf ~/personal-config/.codex/config.toml ~/.codex/config.toml
+ln -sf ~/personal-config/codex/AGENTS.md ~/.codex/AGENTS.md
+ln -sf ~/personal-config/codex/config.toml ~/.codex/config.toml
 ```
 
 ## 说明

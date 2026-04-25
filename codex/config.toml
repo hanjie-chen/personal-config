@@ -4,7 +4,7 @@
 # =========================
 
 # 默认模型
-model = "gpt-5.4"
+model = "gpt-5.5"
 
 # 推理强度
 model_reasoning_effort = "high"
@@ -51,6 +51,9 @@ network_access = true
 trust_level = "trusted"
 
 [projects."/home/plain/personal-project/website"]
+trust_level = "trusted"
+
+[projects."/home/plain/personal-config"]
 trust_level = "trusted"
 
 [features]
