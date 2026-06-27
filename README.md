@@ -6,6 +6,7 @@
 
 - `codex/`: Codex 全局指导文件，只同步 `AGENTS.md`。
 - `git/`: Git 全局配置，包括 ignore 和 attributes。详见 `git/README.md`。
+- `proxy/`: 个人代理分流规则，使用逻辑 target 表达规则意图，不绑定具体客户端策略组名。
 
 ## 使用方式
 
@@ -29,3 +30,7 @@ ln -sf ~/personal-config/codex/AGENTS.md ~/.codex/AGENTS.md
 ### Git
 
 Git 全局 ignore 和 attributes 需要额外设置 Git 配置项，见 `git/README.md`。
+
+### Proxy
+
+代理分流规则见 `proxy/README.md`。仓库只保存跨机器稳定的规则源文件；每台机器需要在本地 Clash 配置目录维护自己的 target 映射。
