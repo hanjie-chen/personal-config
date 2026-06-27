@@ -6,9 +6,10 @@
 
 `git/.gitignore` 用作全局 ignore 文件，适合放跨项目都不希望提交的内容，例如本地环境文件、缓存文件和工具生成文件。
 
+直接让 Git 指向仓库中的文件即可，不需要再链接到 `~/.gitignore`：
+
 ```bash
-ln -sf ~/personal-config/git/.gitignore ~/.gitignore
-git config --global core.excludesFile ~/.gitignore
+git config --global core.excludesFile ~/personal-config/git/.gitignore
 ```
 
 可以用下面的命令检查是否生效：
@@ -22,9 +23,10 @@ git check-ignore -v .env
 
 `git/.gitattributes` 用作全局 attributes 文件，目前主要用于统一文本文件行尾。
 
+直接让 Git 指向仓库中的文件即可，不需要再链接到 `~/.gitattributes`：
+
 ```bash
-ln -sf ~/personal-config/git/.gitattributes ~/.gitattributes
-git config --global core.attributesFile ~/.gitattributes
+git config --global core.attributesFile ~/personal-config/git/.gitattributes
 ```
 
 可以用下面的命令检查是否生效：

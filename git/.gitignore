@@ -1,3 +1,15 @@
+# Windows system files
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+
+# logs and temporary files
+*.log
+*.tmp
+
 # python auto generated file
 __pycache__/
 *.pyc
