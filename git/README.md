@@ -9,7 +9,7 @@
 直接让 Git 指向仓库中的文件即可，不需要再链接到 `~/.gitignore`：
 
 ```bash
-git config --global core.excludesFile ~/personal-config/git/.gitignore
+git config --global core.excludesFile ~/projects/personal-config/git/.gitignore
 ```
 
 可以用下面的命令检查是否生效：
@@ -26,7 +26,7 @@ git check-ignore -v .env
 直接让 Git 指向仓库中的文件即可，不需要再链接到 `~/.gitattributes`：
 
 ```bash
-git config --global core.attributesFile ~/personal-config/git/.gitattributes
+git config --global core.attributesFile ~/projects/personal-config/git/.gitattributes
 ```
 
 可以用下面的命令检查是否生效：
