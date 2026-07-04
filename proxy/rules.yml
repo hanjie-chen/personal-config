@@ -2,7 +2,7 @@ version: 1
 
 # The third field is a logical target, not a Clash proxy group name.
 # Map logical targets to local Clash groups in:
-#   ~/.config/clash/codex-proxy-targets.yml
+#   %APPDATA%/io.github.clash-verge-rev.clash-verge-rev/codex-proxy-targets.yml
 prepend-rules:
   - DOMAIN-SUFFIX,linkedin.com,proxy
   - DOMAIN-SUFFIX,licdn.com,proxy

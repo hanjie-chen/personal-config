@@ -7,7 +7,7 @@
 - `codex/`: Codex 全局指导文件，只同步 `AGENTS.md`。
 - `git/`: Git 全局配置，包括 ignore 和 attributes。详见 `git/README.md`。
 - `powershell/`: PowerShell 7 当前用户交互式 profile。
-- `proxy/`: 个人代理分流规则，使用逻辑 target 表达规则意图，不绑定具体客户端策略组名。
+- `proxy/`: 个人代理分流规则，使用逻辑 target 表达规则意图，不绑定具体客户端策略组名；当前 Windows 机器通过 Clash Verge Rev 的 Profile Enhancement Rules 接入。
 
 ## 使用方式
 
@@ -38,4 +38,10 @@ PowerShell 7 当前用户交互式 profile 见 `powershell/README.md`。
 
 ### Proxy
 
-代理分流规则见 `proxy/README.md`。仓库只保存跨机器稳定的规则源文件；每台机器需要在本地 Clash 配置目录维护自己的 target 映射。
+代理分流规则见 `proxy/README.md`。仓库只保存跨机器稳定的规则源文件和生成器；每台机器需要在本地 Clash/Clash Verge 配置目录维护自己的 target 映射。
+
+当前 Windows/Clash Verge Rev 机器的接入命令：
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\proxy\Apply-ClashVergeRules.ps1
+```
