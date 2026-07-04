@@ -21,5 +21,5 @@ New-Item -ItemType Directory -Force -Path "$HOME\Documents\PowerShell"
 
 New-Item -ItemType SymbolicLink `
   -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" `
-  -Target "E:\Personal_Project\personal-config\powershell\Microsoft.PowerShell_profile.ps1"
+  -Target "$HOME\projects\personal-config\powershell\Microsoft.PowerShell_profile.ps1"
 ```

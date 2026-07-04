@@ -14,7 +14,7 @@
 建议将仓库克隆到：
 
 ```bash
-~/personal-config
+~/projects/personal-config
 ```
 
 ### Codex
@@ -23,7 +23,7 @@
 
 ```bash
 mkdir -p ~/.codex
-ln -sf ~/personal-config/codex/AGENTS.md ~/.codex/AGENTS.md
+ln -sf ~/projects/personal-config/codex/AGENTS.md ~/.codex/AGENTS.md
 ```
 
 不管理 `~/.codex/config.toml`。它包含机器路径、桌面端设置、插件 runtime、MCP server 等本机生成或本机差异较大的配置，应留在各机器本地维护。
