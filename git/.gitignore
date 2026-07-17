@@ -13,6 +13,8 @@ desktop.ini
 # python auto generated file
 __pycache__/
 *.pyc
+# pytest cache files
+.pytest_cache/
 
 # local environment, such as token, password etc
 .env

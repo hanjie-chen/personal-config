@@ -1,12 +1,12 @@
 # personal-config
 
-这是我个人使用的软件配置仓库，用于保存适合长期维护和跨机器同步的稳定配置。
+个人使用的软件配置仓库，用来保存长期维护和跨机器同步的配置。
 
 ## 当前配置模块
 
-- `codex/`: Codex 全局指导文件，只同步 `AGENTS.md`。
-- `git/`: Git 全局配置，包括 ignore 和 attributes。详见 `git/README.md`。
-- `powershell/`: PowerShell 7 当前用户交互式 profile。
+- `codex/`: Codex Global AGENTS.md。
+- `git/`: Git 全局配置，包括 .gitignore 和 .gitattributes。
+- `powershell/`: PowerShell 7 custom profile。
 - `proxy/`: 个人代理分流规则，使用逻辑 target 表达规则意图，不绑定具体客户端策略组名；当前 Windows 机器通过 Clash Verge Rev 的 Profile Enhancement Rules 接入。
 
 ## 使用方式
