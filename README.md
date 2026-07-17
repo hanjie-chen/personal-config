@@ -4,7 +4,7 @@
 
 ## 当前配置模块
 
-- `codex/`: Codex Global AGENTS.md。
+- `codex/`: Codex global instructions 与代码项目 `AGENTS.md` 模板。
 - `git/`: Git 全局配置，包括 .gitignore 和 .gitattributes。
 - `powershell/`: PowerShell 7 custom profile。
 - `proxy/`: 个人代理分流规则，使用逻辑 target 表达规则意图，不绑定具体客户端策略组名；当前 Windows 机器通过 Clash Verge Rev 的 Profile Enhancement Rules 接入。
@@ -18,6 +18,8 @@
 ```
 
 ### Codex
+
+文件用途与代码项目模板见 [`codex/README.md`](codex/README.md)。
 
 把仓库中的 Codex 全局指导文件链接到 `~/.codex`：
 
