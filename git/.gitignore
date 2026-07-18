@@ -31,3 +31,6 @@ __pycache__/
 terraform.tfstate
 # sensitive data
 terraform.tfvars
+
+# local AI working documents
+docs/superpowers/
