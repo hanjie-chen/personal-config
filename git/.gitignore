@@ -6,31 +6,27 @@ desktop.ini
 .vscode/
 .idea/
 
-# logs and temporary files
+# Logs and temporary files
 *.log
 *.tmp
 
-# python auto generated file
+# Python-generated files and tool caches
 __pycache__/
 *.pyc
-# pytest cache files
 .pytest_cache/
 
-# local environment, such as token, password etc
+# Local environment and authentication files
 .env
-# nging basic auth user-password file
 .htpasswd
 
-# pytest-cov file
+# Coverage artifacts
 .coverage
 
-# ignore tf related file
-# terraform cahce file
+# Terraform local artifacts and sensitive variables
 .terraform/
-# terraform status file
 terraform.tfstate
-# sensitive data
 terraform.tfvars
 
-# local AI working documents
+# Local AI working files
 docs/superpowers/
+.superpowers/
