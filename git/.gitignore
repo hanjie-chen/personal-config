@@ -20,6 +20,7 @@ desktop.ini
 __pycache__/
 *.pyc
 .pytest_cache/
+.ruff_cache/
 
 # Local environment and authentication files
 .env
@@ -31,7 +32,9 @@ __pycache__/
 # Terraform local artifacts and sensitive variables
 .terraform/
 terraform.tfstate
+terraform.tfstate.*
 terraform.tfvars
+*.tfplan
 
 # Local AI working files
 docs/superpowers/
