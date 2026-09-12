@@ -1,0 +1,7 @@
+# 跨机器通用偏好；需要合并到本机 config.toml。
+model = "gpt-6-astra"
+model_reasoning_effort = "medium"
+
+[agents]
+default_subagent_model = "gpt-5.6-terra"
+default_subagent_reasoning_effort = "medium"

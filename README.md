@@ -2,9 +2,11 @@
 
 个人使用的软件配置仓库，用来保存长期维护和跨机器同步的配置。
 
+仓库管理可移植的配置偏好、规则和模板；每台机器的完整配置与运行状态留在本机。对于同时包含通用偏好和本机信息的配置文件，只保存需要共享的片段，并在使用时合并到本机配置中。
+
 ## 当前配置模块
 
-- `codex/`: Codex global instructions 与代码项目 `AGENTS.md` 模板。
+- `codex/`: Codex global instructions、代码项目 `AGENTS.md` 模板与跨机器共享的配置片段。
 - `git/`: Git 全局配置，包括 .gitignore 和 .gitattributes。
 - `powershell/`: PowerShell 7 custom profile。
 - `proxy/`: 个人代理分流规则，使用逻辑 target 表达规则意图，不绑定具体客户端策略组名；当前 Windows 机器通过 Clash Verge Rev 的 Profile Enhancement Rules 接入。
@@ -28,7 +30,7 @@ mkdir -p ~/.codex
 ln -sf ~/projects/personal-config/codex/AGENTS.md ~/.codex/AGENTS.md
 ```
 
-不管理 `~/.codex/config.toml`。它包含机器路径、桌面端设置、插件 runtime、MCP server 等本机生成或本机差异较大的配置，应留在各机器本地维护。
+跨机器通用偏好保存在 [`codex/config.shared.toml`](codex/config.shared.toml)，按 [`codex/README.md`](codex/README.md) 中的步骤手动合并到本机配置。仓库不管理完整的 `~/.codex/config.toml`，也不将它链接到仓库；机器路径、项目信任记录、插件 runtime、MCP server 等本机配置继续在各机器维护。
 
 ### Git
 

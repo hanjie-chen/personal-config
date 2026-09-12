@@ -1,8 +1,15 @@
-# Codex Instructions and Templates
+# Codex Instructions, Templates, and Shared Configuration
 
-This directory contains personal Codex instructions and templates.
+- `AGENTS.md`: global instructions installed at `~/.codex/AGENTS.md`.
+- `AGENTS.code.example.md`: starter template to copy and adapt into a code project's `AGENTS.md`.
+- `config.shared.toml`: portable preferences to merge manually into each machine's user configuration; Codex does not load this fragment automatically.
 
-- `AGENTS.md` contains the global instructions installed at `~/.codex/AGENTS.md`. Codex loads them automatically across projects.
-- `AGENTS.code.example.md` is a starter template for code projects. Copy it into a project's `AGENTS.md` and adapt it to that project's structure and needs; Codex does not load the example file automatically.
+See the [root README](../README.md) for global instructions installation.
 
-The repository root `README.md` documents how to install the global instructions.
+## Shared configuration
+
+Keep cross-machine preferences in this repository. Each machine's complete configuration, including paths, project trust records, MCP settings, and plugin runtime details, stays local.
+
+Merge the fragment into `~/.codex/config.toml` on Linux/macOS or `%USERPROFILE%\.codex\config.toml` on Windows (or `CODEX_HOME/config.toml` when set). Update matching keys in their existing TOML sections, preserving other settings; do not overwrite the whole file or duplicate table headers. Keep the subagent model and reasoning effort settings together.
+
+Reapply changes manually on each machine, then start a new Codex task to use the updated defaults.
