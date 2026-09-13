@@ -4,6 +4,8 @@
 - `AGENTS.code.example.md`: starter template to copy and adapt into a code project's `AGENTS.md`.
 - `config.shared.toml`: portable preferences to merge manually into each machine's user configuration; Codex does not load this fragment automatically.
 
+The global instructions were last reviewed with GPT-6 Astra at medium reasoning effort. They reflect personal workflow preferences rather than model-specific requirements.
+
 See the [root README](../README.md) for global instructions installation.
 
 ## Shared configuration
