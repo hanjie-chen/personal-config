@@ -1,87 +1,41 @@
-# Proxy 配置
+# 个人代理分流规则
 
-这个目录保存个人代理分流规则。仓库只维护长期稳定的规则意图和可复用生成器，不保存具体客户端的运行时配置、订阅 URL、节点信息。
+`rules.yml` 是规则的唯一维护源；`Apply-ClashVergeRules.ps1` 将它生成到 Clash Verge 的规则增强文件。仓库不保存订阅 URL、节点信息或客户端完整配置。
 
-## 文件
+## 当前偏好
 
-- `rules.yml`: 本地 overlay 规则源文件。
-- `Apply-ClashVergeRules.ps1`: 将 `rules.yml` 写入当前 Clash Verge Rev profile 的 Profile Enhancement Rules 文件。
+- OpenAI、Google/Gemini、Claude/Anthropic、GitHub/Copilot：代理。
+- Bilibili、国内抖音、Outlook/Teams：直连。
+- 保留规则顺序；共享 CDN 使用具体域名，不扩大到整个父域名。Microsoft 登录和资源域名也可能被其他应用共用。
 
-## 规则格式
+目前共 113 条；精确域名、IP 范围和顺序以 `rules.yml` 为准。规则仅影响进入 Clash 的流量，不保证网站功能或会议媒体一定可用。
 
-`rules.yml` 的 `prepend-rules` 每一行格式为：
+## 本机接入
 
-```yaml
-- RULE-TYPE,value,logical-target
-```
+规则使用 `proxy` / `direct` 表达意图。每台机器在 `%APPDATA%\io.github.clash-verge-rev.clash-verge-rev\codex-proxy-targets.yml` 配置实际策略组，不将这个本机文件提交到仓库。
 
-示例：
-
-```yaml
-- DOMAIN-SUFFIX,linkedin.com,proxy
-- DOMAIN-SUFFIX,openai.com,fallback
-```
-
-`logical-target` 需要在本机 Clash/Clash Verge 配置目录中映射到真实策略组：
+当前 Windows 的映射：
 
 ```yaml
 targets:
-  proxy: 🔰 节点选择
-  fallback: 🐟 漏网之鱼
+  proxy: PROXY
+  direct: DIRECT
 ```
 
-这个本机映射文件不放进仓库，因为不同机器的策略组名可能不同。
+重装后先在 Clash Verge 导入客户端配置，再创建上述映射。其他机器按自己的策略组名填写；仓库规则不会自动同步到其他设备。
 
-## Clash Verge Rev 接入
-
-当前 Windows 机器使用 Clash Verge Rev，采用 Verge 的 Profile Enhancement 机制接入：
-
-- `rules.yml` 仍是仓库内唯一的规则源。
-- 本机 target 映射放在 `%APPDATA%\io.github.clash-verge-rev.clash-verge-rev\codex-proxy-targets.yml`。
-- 生成器读取 Verge 的 `profiles.yaml`，找到当前订阅 profile 绑定的 `option.rules` profile 文件，然后写入 `prepend` 规则。
-- 这属于 Profile Enhancement Rules，不直接改订阅 YAML，也不把节点、订阅 URL 或运行时状态写回仓库。
-
-本机 target 映射示例：
-
-```yaml
-targets:
-  proxy: 🔰 节点选择
-  fallback: 🐟 漏网之鱼
-```
-
-手动生成当前 Clash Verge Rev profile 的 rules enhancement：
+从仓库根目录运行：
 
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\proxy\Apply-ClashVergeRules.ps1
+# 检查映射和当前 profile，不写入
+pwsh -NoProfile -File .\proxy\Apply-ClashVergeRules.ps1 -ProfileName sg -WhatIf
+
+# 写入 sg 的规则增强文件
+pwsh -NoProfile -File .\proxy\Apply-ClashVergeRules.ps1 -ProfileName sg
 ```
 
-这个命令的作用是把仓库里的 `proxy/rules.yml` 同步到当前 Clash Verge Rev profile 绑定的 Rules Enhancement 文件里。它不会直接修改订阅 YAML，也不会把节点信息写进仓库。
+`sg` 必须是当前选中的 profile，且使用独立的规则增强文件；其他机器传入对应名称。脚本拒绝空规则、无效映射以及已有的非空 append/delete，避免覆盖额外配置。IP 规则的 `no-resolve` 选项会保留。
 
-命令参数含义：
+脚本只生成增强文件，不重载旧的运行配置。规则改变后，在 Clash Verge 重新应用当前 profile，随后检查实际规则匹配。修改规则、映射或接入 profile 后才需要重新生成，无需开机定时运行。
 
-- `pwsh`: 使用 PowerShell 7 运行脚本。
-- `-NoProfile`: 不加载当前用户的 PowerShell profile，避免本机别名或函数影响脚本行为。
-- `-ExecutionPolicy Bypass`: 只对这一次执行放行脚本执行策略，不修改系统策略。
-- `-File .\proxy\Apply-ClashVergeRules.ps1`: 指定要运行的生成器脚本。
-
-不需要每次开机或每次打开 Clash Verge 都运行。只有以下情况需要运行一次：
-
-- 修改了 `proxy/rules.yml`。
-- 修改了本机 target 映射文件。
-- Clash Verge 当前订阅/profile 换了，导致绑定的 Rules Enhancement 文件变化。
-
-如果当前目录已经是 `proxy/`：
-
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\Apply-ClashVergeRules.ps1
-```
-
-脚本默认会尝试请求 Mihomo controller 重新加载当前运行时配置。但 Clash Verge 的 profile enhancement 是应用层合成配置：如果 `clash-verge.yaml` 没有立刻出现新规则，需要在 Clash Verge UI 中重新应用/刷新当前订阅 profile，让 Verge 重新生成运行时配置。
-
-## 机制选择
-
-当前选择 Profile Enhancement Rules，而不是把规则直接 merge 到运行时 YAML：
-
-- Rules enhancement 天然支持 `prepend`/`append`/`delete`，适合维护分流规则。
-- Merge enhancement 更适合维护 `profile`、`dns`、`tun` 等结构化配置。
-- 直接修改 `clash-verge.yaml` 会被订阅刷新或 Verge 重建覆盖，只适合临时排障，不适合作为长期机制。
+只编辑仓库里的规则源。Clash 中的增强文件是生成结果，`clash-verge.yaml` 是运行结果；直接修改它们会在下次生成时被覆盖。使用 `-OutputPath <临时文件>` 可预览生成内容。

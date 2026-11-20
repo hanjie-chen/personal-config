@@ -1,8 +1,12 @@
+[CmdletBinding(SupportsShouldProcess)]
 param(
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$ProfileName,
     [string]$VergeRoot = (Join-Path $env:APPDATA "io.github.clash-verge-rev.clash-verge-rev"),
     [string]$RulesPath = (Join-Path $PSScriptRoot "rules.yml"),
     [string]$TargetMapPath = "",
-    [switch]$NoReload
+    [string]$OutputPath = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -64,11 +68,6 @@ function Resolve-TargetMapPath {
         return $preferred
     }
 
-    $legacy = Join-Path $HOME ".config\clash\codex-proxy-targets.yml"
-    if (Test-Path -LiteralPath $legacy) {
-        return $legacy
-    }
-
     throw "Target map file not found. Create one at $preferred or pass -TargetMapPath."
 }
 
@@ -89,7 +88,12 @@ function Read-TargetMap {
         }
 
         if ($inTargets -and $line -match '^\s{2,}([^:#]+):\s*(.+?)\s*$') {
-            $targets[$matches[1].Trim()] = Unquote-Scalar -Value $matches[2]
+            $key = $matches[1].Trim()
+            $value = Unquote-Scalar -Value $matches[2]
+            if ([string]::IsNullOrWhiteSpace($value) -or $value.Contains(',')) {
+                throw "Invalid local target mapping for '$key'."
+            }
+            $targets[$key] = $value
             continue
         }
 
@@ -126,9 +130,20 @@ function Read-OverlayRules {
 
         if ($line -match '^\s*-\s*(.+?)\s*$') {
             $rawRule = Unquote-Scalar -Value $matches[1]
-            $parts = $rawRule.Split(',', 3)
-            if ($parts.Count -ne 3) {
-                throw "Invalid prepend rule. Expected RULE-TYPE,value,logical-target: $rawRule"
+            $parts = @($rawRule.Split(',') | ForEach-Object { $_.Trim() })
+            if ($parts.Count -lt 3 -or $parts.Count -gt 4 -or
+                @($parts | Where-Object { [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) {
+                throw "Invalid rule. Expected RULE-TYPE,value,logical-target[,no-resolve]: $rawRule"
+            }
+            if ($parts[0] -notin @('DOMAIN', 'DOMAIN-SUFFIX', 'GEOSITE', 'IP-CIDR', 'IP-CIDR6')) {
+                throw "Unsupported rule type: $($parts[0])"
+            }
+            $options = ''
+            if ($parts.Count -eq 4) {
+                if ($parts[3] -ne 'no-resolve' -or $parts[0] -notin @('IP-CIDR', 'IP-CIDR6')) {
+                    throw "Unsupported rule option: $rawRule"
+                }
+                $options = ',no-resolve'
             }
 
             $logicalTarget = $parts[2].Trim()
@@ -141,6 +156,7 @@ function Read-OverlayRules {
                 Value         = $parts[1].Trim()
                 LogicalTarget = $logicalTarget
                 Target        = [string]$Targets[$logicalTarget]
+                Options       = $options
             }
             continue
         }
@@ -148,8 +164,14 @@ function Read-OverlayRules {
         if ($line -match '^\S' -and $line -notmatch '^\s*#') {
             $inPrependRules = $false
         }
+        elseif ($inPrependRules -and $line -notmatch '^\s*(#.*)?$') {
+            throw "Invalid rule line: $line"
+        }
     }
 
+    if ($rules.Count -eq 0) {
+        throw "No prepend rules found in $Path; refusing to clear the active rules."
+    }
     return $rules
 }
 
@@ -163,7 +185,7 @@ function Read-ProfilesConfig {
 
     foreach ($line in Read-Utf8Lines -Path $Path) {
         if ($line -match '^current:\s*(.+?)\s*$') {
-            $current = $matches[1].Trim()
+            $current = Unquote-Scalar -Value $matches[1]
             continue
         }
 
@@ -173,7 +195,7 @@ function Read-ProfilesConfig {
             }
 
             $item = [ordered]@{
-                uid    = $matches[1].Trim()
+                uid    = Unquote-Scalar -Value $matches[1]
                 option = @{}
             }
             $inOption = $false
@@ -221,7 +243,10 @@ function Read-ProfilesConfig {
 }
 
 function Get-ActiveRulesProfilePath {
-    param([Parameter(Mandatory = $true)][string]$VergeRoot)
+    param(
+        [Parameter(Mandatory = $true)][string]$VergeRoot,
+        [Parameter(Mandatory = $true)][string]$ExpectedName
+    )
 
     $profilesYamlPath = Join-Path $VergeRoot "profiles.yaml"
     $profiles = Read-ProfilesConfig -Path $profilesYamlPath
@@ -229,10 +254,19 @@ function Get-ActiveRulesProfilePath {
     if (-not $currentItem) {
         throw "Current profile '$($profiles.Current)' was not found in: $profilesYamlPath"
     }
+    if ($currentItem.name -ne $ExpectedName) {
+        throw "Expected profile '$ExpectedName', but the selected profile is '$($currentItem.name)'. Nothing was written."
+    }
 
     $rulesUid = $currentItem.option["rules"]
     if (-not $rulesUid) {
         throw "Current profile '$($profiles.Current)' does not have an option.rules profile."
+    }
+    $otherUsers = @($profiles.Items | Where-Object {
+        $_.uid -ne $currentItem.uid -and $_.option['rules'] -eq $rulesUid
+    })
+    if ($otherUsers.Count -gt 0) {
+        throw 'The rules enhancement is shared by another profile. Use a separate enhancement before applying personal rules.'
     }
 
     $rulesItem = $profiles.Items | Where-Object { $_.uid -eq $rulesUid } | Select-Object -First 1
@@ -244,56 +278,10 @@ function Get-ActiveRulesProfilePath {
         throw "Rules profile '$rulesUid' does not have a file field."
     }
 
+    if ([IO.Path]::GetFileName($rulesItem.file) -ne $rulesItem.file) {
+        throw 'The rules enhancement must be a file inside the Verge profiles directory.'
+    }
     return Join-Path (Join-Path $VergeRoot "profiles") $rulesItem.file
-}
-
-function Get-ClashScalar {
-    param(
-        [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string]$Name
-    )
-
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
-    }
-
-    $pattern = '^\s*' + [regex]::Escape($Name) + ':\s*(.+?)\s*$'
-    foreach ($line in Read-Utf8Lines -Path $Path) {
-        if ($line -match $pattern) {
-            return Unquote-Scalar -Value $matches[1]
-        }
-    }
-
-    return $null
-}
-
-function Reload-MihomoRuntime {
-    param([Parameter(Mandatory = $true)][string]$VergeRoot)
-
-    $runtimePath = Join-Path $VergeRoot "clash-verge.yaml"
-    if (-not (Test-Path -LiteralPath $runtimePath)) {
-        Write-Warning "Runtime config not found, skipped controller reload: $runtimePath"
-        return
-    }
-
-    $configPath = Join-Path $VergeRoot "config.yaml"
-    $controller = Get-ClashScalar -Path $configPath -Name "external-controller"
-    if (-not $controller) {
-        $controller = "127.0.0.1:9097"
-    }
-
-    if ($controller -notmatch '^https?://') {
-        $controller = "http://$controller"
-    }
-
-    $secret = Get-ClashScalar -Path $configPath -Name "secret"
-    $headers = @{}
-    if ($secret) {
-        $headers["Authorization"] = "Bearer $secret"
-    }
-
-    $body = @{ path = $runtimePath } | ConvertTo-Json -Compress
-    Invoke-RestMethod -Method Put -Uri ($controller.TrimEnd('/') + "/configs?force=true") -Headers $headers -Body $body -ContentType "application/json" -TimeoutSec 5 | Out-Null
 }
 
 $resolvedVergeRoot = [System.IO.Path]::GetFullPath($VergeRoot)
@@ -302,7 +290,18 @@ $resolvedTargetMapPath = Resolve-TargetMapPath -VergeRoot $resolvedVergeRoot -Re
 
 $targets = Read-TargetMap -Path $resolvedTargetMapPath
 $rules = Read-OverlayRules -Path $resolvedRulesPath -Targets $targets
-$activeRulesProfilePath = Get-ActiveRulesProfilePath -VergeRoot $resolvedVergeRoot
+$activeRulesProfilePath = Get-ActiveRulesProfilePath -VergeRoot $resolvedVergeRoot -ExpectedName $ProfileName
+
+# Do not discard append/delete edits or unsupported enhancement settings.
+if (Test-Path -LiteralPath $activeRulesProfilePath) {
+    foreach ($line in Read-Utf8Lines -Path $activeRulesProfilePath) {
+        if ($line -match '^\s*(#.*)?$' -or $line -match '^prepend:\s*(\[\])?\s*$' -or
+            $line -match '^\s*-\s*.+$' -or $line -match '^(append|delete):\s*\[\]\s*$') {
+            continue
+        }
+        throw 'The enhancement contains additional settings or nonempty append/delete rules. Merge those manually before applying.'
+    }
+}
 
 $rendered = @(
     "# Profile Enhancement Rules Template for Clash Verge",
@@ -311,14 +310,9 @@ $rendered = @(
     "# Target map: $resolvedTargetMapPath"
 )
 
-if ($rules.Count -eq 0) {
-    $rendered += "prepend: []"
-}
-else {
-    $rendered += "prepend:"
-    foreach ($rule in $rules) {
-        $rendered += "  - " + (Quote-YamlString -Value "$($rule.Type),$($rule.Value),$($rule.Target)")
-    }
+$rendered += "prepend:"
+foreach ($rule in $rules) {
+    $rendered += "  - " + (Quote-YamlString -Value "$($rule.Type),$($rule.Value),$($rule.Target)$($rule.Options)")
 }
 
 $rendered += @(
@@ -328,18 +322,14 @@ $rendered += @(
     "delete: []"
 )
 
-Write-Utf8Lines -Path $activeRulesProfilePath -Lines $rendered
-
-Write-Host "Wrote Clash Verge Profile Enhancement rules:"
-Write-Host "  $activeRulesProfilePath"
-Write-Host "Rules generated: $($rules.Count)"
-
-if (-not $NoReload) {
-    try {
-        Reload-MihomoRuntime -VergeRoot $resolvedVergeRoot
-        Write-Host "Requested Mihomo runtime reload."
-    }
-    catch {
-        Write-Warning "Generated the profile rules, but controller reload failed: $($_.Exception.Message)"
+$destination = $activeRulesProfilePath
+if ($OutputPath) {
+    $destination = [IO.Path]::GetFullPath($OutputPath)
+}
+if ($PSCmdlet.ShouldProcess($destination, "Write $($rules.Count) personal rules for '$ProfileName'")) {
+    Write-Utf8Lines -Path $destination -Lines $rendered
+    Write-Host "Wrote $($rules.Count) rules: $destination"
+    if (-not $OutputPath) {
+        Write-Host 'Reapply the profile in Clash Verge to compose and activate changed rules. This script does not reload the runtime.'
     }
 }

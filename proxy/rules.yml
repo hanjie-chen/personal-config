@@ -1,14 +1,133 @@
 version: 1
 
-# The third field is a logical target, not a Clash proxy group name.
-# Map logical targets to local Clash groups in:
-#   %APPDATA%/io.github.clash-verge-rev.clash-verge-rev/codex-proxy-targets.yml
+# Personal routing preferences. Order is significant.
+# Logical targets are mapped locally in codex-proxy-targets.yml.
+# Keep shared CDN exceptions limited to the exact hostnames below.
 prepend-rules:
-  - DOMAIN-SUFFIX,linkedin.com,proxy
-  - DOMAIN-SUFFIX,licdn.com,proxy
-  - DOMAIN-SUFFIX,lnkd.in,proxy
-  - DOMAIN-SUFFIX,linkedin-ei.com,proxy
-  - DOMAIN-SUFFIX,chatgpt.com,fallback
-  - DOMAIN-SUFFIX,openai.com,fallback
-  - DOMAIN-SUFFIX,oaistatic.com,fallback
-  - DOMAIN-SUFFIX,oaiusercontent.com,fallback
+
+  # OpenAI: proxy
+  - DOMAIN-SUFFIX,chatgpt.com,proxy
+  - DOMAIN-SUFFIX,openai.com,proxy
+  - DOMAIN-SUFFIX,oaistatic.com,proxy
+  - DOMAIN-SUFFIX,oaiusercontent.com,proxy
+
+  # Bilibili: direct
+  - DOMAIN-SUFFIX,bilibili.com,direct
+  - DOMAIN-SUFFIX,b23.tv,direct
+  - DOMAIN-SUFFIX,biliapi.com,direct
+  - DOMAIN-SUFFIX,biliapi.net,direct
+  - DOMAIN-SUFFIX,hdslb.com,direct
+  - DOMAIN-SUFFIX,acgvideo.com,direct
+  - DOMAIN-SUFFIX,biliimg.com,direct
+  - DOMAIN-SUFFIX,bilivideo.com,direct
+  - DOMAIN-SUFFIX,bilivideo.cn,direct
+  - DOMAIN-SUFFIX,bilivideo.net,direct
+
+  # Domestic Douyin: direct
+  - DOMAIN-SUFFIX,douyin.com,direct
+  - DOMAIN-SUFFIX,iesdouyin.com,direct
+  - DOMAIN-SUFFIX,amemv.com,direct
+  - DOMAIN-SUFFIX,douyincdn.com,direct
+  - DOMAIN-SUFFIX,douyinpic.com,direct
+  - DOMAIN-SUFFIX,douyinstatic.com,direct
+  - DOMAIN-SUFFIX,douyinvod.com,direct
+  - DOMAIN-SUFFIX,idouyinvod.com,direct
+  - DOMAIN-SUFFIX,douyinliving.com,direct
+  - DOMAIN-SUFFIX,idouyinliving.com,direct
+  - DOMAIN-SUFFIX,idouyinpic.com,direct
+  - DOMAIN-SUFFIX,idouyinstatic.com,direct
+  - DOMAIN-SUFFIX,douyinfe.com,direct
+
+  # Google, Gemini, Gmail and YouTube: proxy
+  - DOMAIN-SUFFIX,google.com,proxy
+  - DOMAIN-SUFFIX,googleapis.com,proxy
+  - DOMAIN-SUFFIX,gstatic.com,proxy
+  - DOMAIN-SUFFIX,googleusercontent.com,proxy
+  - DOMAIN-SUFFIX,gmail.com,proxy
+  - DOMAIN-SUFFIX,googlemail.com,proxy
+  - DOMAIN-SUFFIX,google.dev,proxy
+  - DOMAIN-SUFFIX,goog,proxy
+  - DOMAIN-SUFFIX,google,proxy
+  - DOMAIN-SUFFIX,g.co,proxy
+  - DOMAIN-SUFFIX,goo.gl,proxy
+  - DOMAIN-SUFFIX,youtube.com,proxy
+  - DOMAIN-SUFFIX,youtu.be,proxy
+  - DOMAIN-SUFFIX,googlevideo.com,proxy
+  - DOMAIN-SUFFIX,ytimg.com,proxy
+  - DOMAIN-SUFFIX,ggpht.com,proxy
+  - DOMAIN-SUFFIX,recaptcha.net,proxy
+  - DOMAIN-SUFFIX,gvt1.com,proxy
+  - DOMAIN-SUFFIX,gvt2.com,proxy
+  - DOMAIN-SUFFIX,1e100.net,proxy
+  - GEOSITE,google,proxy
+
+  # Claude and Anthropic: proxy
+  - DOMAIN-SUFFIX,anthropic.com,proxy
+  - DOMAIN-SUFFIX,anthropic.team,proxy
+  - DOMAIN-SUFFIX,claude.ai,proxy
+  - DOMAIN-SUFFIX,claude.com,proxy
+  - DOMAIN-SUFFIX,claude.app,proxy
+  - DOMAIN-SUFFIX,claude.dev,proxy
+  - DOMAIN-SUFFIX,claude.new,proxy
+  - DOMAIN-SUFFIX,claude.site,proxy
+  - DOMAIN-SUFFIX,claudeusercontent.com,proxy
+  - DOMAIN,servd-anthropic-website.b-cdn.net,proxy
+
+  # GitHub and Copilot: proxy
+  - DOMAIN-SUFFIX,github.com,proxy
+  - DOMAIN-SUFFIX,githubusercontent.com,proxy
+  - DOMAIN-SUFFIX,githubassets.com,proxy
+  - DOMAIN-SUFFIX,github.io,proxy
+  - DOMAIN-SUFFIX,github.dev,proxy
+  - DOMAIN-SUFFIX,githubapp.com,proxy
+  - DOMAIN-SUFFIX,githubpreview.dev,proxy
+  - DOMAIN-SUFFIX,github.blog,proxy
+  - DOMAIN-SUFFIX,github.community,proxy
+  - DOMAIN-SUFFIX,githubstatus.com,proxy
+  - DOMAIN-SUFFIX,ghcr.io,proxy
+  - DOMAIN-SUFFIX,git.io,proxy
+  - DOMAIN-SUFFIX,githubnext.com,proxy
+  - DOMAIN-SUFFIX,githubcopilot.com,proxy
+  - DOMAIN,github-cloud.s3.amazonaws.com,proxy
+  - DOMAIN,github-production-release-asset-2e65be.s3.amazonaws.com,proxy
+  - DOMAIN,github-production-repository-file-5c1aeb.s3.amazonaws.com,proxy
+  - DOMAIN,github-production-repository-image-32fea6.s3.amazonaws.com,proxy
+  - DOMAIN,github-production-upload-manifest-file-7fdce7.s3.amazonaws.com,proxy
+  - DOMAIN,github-production-user-asset-6210df.s3.amazonaws.com,proxy
+  - DOMAIN,production-copilot-host-westus.webpubsub.azure.com,proxy
+  - DOMAIN,copilotprodattachments.blob.core.windows.net,proxy
+
+  # Outlook, Teams and shared Microsoft sign-in resources: direct
+  - DOMAIN-SUFFIX,outlook.com,direct
+  - DOMAIN-SUFFIX,outlook.live.com,direct
+  - DOMAIN-SUFFIX,office.com,direct
+  - DOMAIN-SUFFIX,office365.com,direct
+  - DOMAIN-SUFFIX,office.net,direct
+  - DOMAIN-SUFFIX,teams.microsoft.com,direct
+  - DOMAIN-SUFFIX,teams.cloud.microsoft,direct
+  - DOMAIN-SUFFIX,teams.live.com,direct
+  - DOMAIN-SUFFIX,lync.com,direct
+  - DOMAIN-SUFFIX,skype.com,direct
+  - DOMAIN-SUFFIX,outlook.cloud.microsoft,direct
+  - DOMAIN-SUFFIX,microsoftonline.com,direct
+  - DOMAIN-SUFFIX,microsoftonline-p.com,direct
+  - DOMAIN-SUFFIX,msauth.net,direct
+  - DOMAIN-SUFFIX,msauthimages.net,direct
+  - DOMAIN-SUFFIX,msftauth.net,direct
+  - DOMAIN-SUFFIX,msftauthimages.net,direct
+  - DOMAIN-SUFFIX,auth.microsoft.com,direct
+  - DOMAIN-SUFFIX,msftidentity.com,direct
+  - DOMAIN,teams.public.onecdn.static.microsoft,direct
+  - DOMAIN,res.public.onecdn.static.microsoft,direct
+  - DOMAIN,login.microsoft.com,direct
+  - DOMAIN,login.windows.net,direct
+  - DOMAIN,autologon.microsoftazuread-sso.com,direct
+  - DOMAIN,login.live.com,direct
+  - DOMAIN,account.live.com,direct
+  - DOMAIN,signup.live.com,direct
+  - DOMAIN,auth.gfx.ms,direct
+  - DOMAIN,graph.microsoft.com,direct
+  - DOMAIN,graph.windows.net,direct
+  - IP-CIDR,52.112.0.0/14,direct,no-resolve
+  - IP-CIDR,52.122.0.0/15,direct,no-resolve
+  - IP-CIDR6,2603:1063::/38,direct,no-resolve

@@ -47,5 +47,5 @@ PowerShell 7 当前用户交互式 profile 见 `powershell/README.md`。
 当前 Windows/Clash Verge Rev 机器的接入命令：
 
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File .\proxy\Apply-ClashVergeRules.ps1
+pwsh -NoProfile -File .\proxy\Apply-ClashVergeRules.ps1 -ProfileName sg
 ```
